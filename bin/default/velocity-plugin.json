@@ -1,0 +1,1 @@
+{"id":"velocitybridge","name":"VelocityBridge","version":"1.0.0-SNAPSHOT","description":"グローバルチャット・Discord連携・ローマ字変換 Velocity プラグイン","authors":["YourName"],"dependencies":[],"main":"com.example.velocitybridge.VelocityBridgePlugin"}
