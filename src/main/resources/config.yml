@@ -1,0 +1,56 @@
+# =============================================
+#   VelocityBridge - config.yml
+# =============================================
+
+discord:
+  # Discord Bot Token (Discord Developer Portal で取得)
+  token: "YOUR_BOT_TOKEN_HERE"
+  # 送信先テキストチャンネルの ID
+  channel-id: "YOUR_CHANNEL_ID_HERE"
+
+  formats:
+    # Minecraft → Discord のチャットフォーマット
+    #
+    # 使えるプレースホルダー:
+    #   {server}  バックエンドサーバー名
+    #   {player}  プレイヤー名
+    #   {message} 表示用メッセージ (Minecraft と同じ内容。変換あり時は "日本語 (romaji)" 形式)
+    #
+    chat: "`[{server}]` **{player}**: {message}"
+    # Discord → Minecraft のブロードキャストフォーマット (MiniMessage 形式)
+    # 変数: <user>, <message>
+    discord-to-minecraft: "<aqua>[Discord]</aqua> <white><user></white> <dark_gray>»</dark_gray> <white><message></white>"
+
+  embed-colors:
+    join:   5763719   # 緑 (0x57F287)
+    leave:  15548997  # 赤 (0xED4245)
+    switch: 16776960  # 黄 (0xFFFF00)
+
+chat:
+  # ローマ字 → 日本語変換 (Google Input Tools API 使用)
+  romaji-conversion: false
+
+  # 変換が実際に行われた場合の表示フォーマット
+  # 変換されなかった場合はこの設定は無視され、かっこも表示されない
+  #   {converted} 日本語変換後テキスト
+  #   {original}  元のローマ字テキスト
+  romaji-display: "{converted} ({original})"
+
+  # Minecraft 内チャットフォーマット (MiniMessage 形式)
+  #
+  # 使えるプレースホルダー:
+  #   <player>  プレイヤー名
+  #   <server>  バックエンドサーバー名
+  #   <message> 表示用メッセージ
+  #               変換あり → romaji-display の形式 (例: "こんにちは (konnichiha)")
+  #               変換なし → 元テキストのみ   (例: "hello world")
+  #
+  format: "<dark_gray>[<gray><server><dark_gray>]</dark_gray> <white><player></white> <dark_gray>»</dark_gray> <white><message></white>"
+
+messages:
+  # 接続・切断・移動メッセージ (MiniMessage 形式)
+  # 変数: <player>
+  join:   "<green>▶ <white><player></white> がネットワークに参加しました</green>"
+  leave:  "<red>◀ <white><player></white> がネットワークから退出しました</red>"
+  # 変数: <player>, <from>, <to>
+  switch: "<yellow>→ <white><player></white> が <aqua><from></aqua> から <aqua><to></aqua> に移動しました</yellow>"

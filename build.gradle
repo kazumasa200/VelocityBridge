@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.example.velocitybridge'
+version = '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly 'com.velocitypowered:velocity-api:3.3.0-SNAPSHOT'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.3.0-SNAPSHOT'
+
+    // Gson は Velocity がランタイムで提供するため compileOnly で十分
+    compileOnly 'com.google.code.gson:gson:2.10.1'
+
+    // JDA (Discord) - 音声不要なので opus-java を除外
+    implementation('net.dv8tion:JDA:5.0.0-beta.24') {
+        exclude group: 'club.minnced', module: 'opus-java'
+    }
+
+    // YAML config
+    implementation 'org.yaml:snakeyaml:2.2'
+}
+
+// Shadow プラグインの ASM バグを避けるため、標準の jar タスクで fat jar を作成
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    // META-INF/services はマージ (SPI が壊れないように)
+    from(configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }) {
+        include 'META-INF/services/**'
+    }
+    // 不要なシグネチャファイルを除外 (JAR 検証エラー防止)
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}

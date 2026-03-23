@@ -1,0 +1,19 @@
+# Build output
+build/
+out/
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 機密情報を含む可能性があるファイルは絶対にコミットしない
+plugins/velocitybridge/config.yml
