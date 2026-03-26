@@ -56,7 +56,7 @@ public class VelocityBridgePlugin {
         discordManager.setProxyServer(server);
         discordManager.connect();
 
-        server.getEventManager().register(this, new ChatListener(server, config, discordManager));
+        server.getEventManager().register(this, new ChatListener(this, server, config, discordManager));
         server.getEventManager().register(this, new ConnectionListener(server, config, discordManager));
         server.getEventManager().register(this, new ServerSwitchListener(server, config, discordManager));
 
