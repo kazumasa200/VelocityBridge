@@ -68,6 +68,14 @@ public class PluginConfig {
 
     // ---- チャット設定 ----
 
+    /**
+     * true: ChatResult.denied() を使用（FreedomChat 等で署名除去済みの場合）
+     * false: ChatResult.allowed() のまま（署名付き 1.19.1+ 対応、送信元サーバーは元表示）
+     */
+    public boolean isUseDenied() {
+        return getBoolean("chat.use-denied", false);
+    }
+
     public boolean isRomajiConversionEnabled() {
         return getBoolean("chat.romaji-conversion", false);
     }
