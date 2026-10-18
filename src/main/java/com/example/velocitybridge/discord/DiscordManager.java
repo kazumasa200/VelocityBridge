@@ -108,7 +108,9 @@ public class DiscordManager {
         String text = config.getDiscordChatFormat()
             .replace("{server}",  serverName)
             .replace("{player}",  playerName)
-            .replace("{message}", MarkdownSanitizer.escape(message));
+            // MarkdownSanitizer はマスクリンク [文字](URL) を素通しするので、"](" の間に \ を挟んで
+            // リンクにさせない（表示は変わらない）。[ や ] を個別に \ で潰すと、発言側の \ で打ち消せる
+            .replace("{message}", MarkdownSanitizer.escape(message).replace("](", "]\\("));
 
         // プレイヤーの発言に @everyone / @here / ロール / ユーザーの通知を飛ばさせない
         channel.sendMessage(text).setAllowedMentions(EnumSet.noneOf(Message.MentionType.class)).queue(
