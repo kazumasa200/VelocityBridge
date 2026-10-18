@@ -6,8 +6,8 @@ group = 'com.example.velocitybridge'
 version = '1.0.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    // Velocity 4.2 の API は Java 25 以上
+    toolchain { languageVersion = JavaLanguageVersion.of(25) }
 }
 
 repositories {
@@ -19,19 +19,22 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.velocitypowered:velocity-api:3.3.0-SNAPSHOT'
-    annotationProcessor 'com.velocitypowered:velocity-api:3.3.0-SNAPSHOT'
+    compileOnly 'com.velocitypowered:velocity-api:4.2.0'
+    annotationProcessor 'com.velocitypowered:velocity-api:4.2.0'
 
     // Gson は Velocity がランタイムで提供するため compileOnly で十分
     compileOnly 'com.google.code.gson:gson:2.10.1'
 
     // JDA (Discord) - 音声不要なので opus-java を除外
-    implementation('net.dv8tion:JDA:5.0.0-beta.24') {
+    implementation('net.dv8tion:JDA:6.7.0') {
         exclude group: 'club.minnced', module: 'opus-java'
     }
 
+    // JDA が連れてくる Jackson 2.22.2 には DoS 系の脆弱性 (GHSA-7hhh-6rmp-j9qf ほか3件) があるので修正版に上げる
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.22.4')
+
     // YAML config
-    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'org.yaml:snakeyaml:2.7'
 }
 
 // Shadow プラグインの ASM バグを避けるため、標準の jar タスクで fat jar を作成

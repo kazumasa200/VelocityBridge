@@ -16,6 +16,10 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class ChatListener {
 
     private final VelocityBridgePlugin plugin;
@@ -24,6 +28,7 @@ public class ChatListener {
     private final DiscordManager discordManager;
     private final MiniMessage miniMessage;
     private final RomajiConverter romajiConverter;
+    private final Map<UUID, Long> lastConvert = new ConcurrentHashMap<>();
 
     public ChatListener(VelocityBridgePlugin plugin, ProxyServer server,
                         PluginConfig config, DiscordManager discordManager) {
@@ -67,7 +72,8 @@ public class ChatListener {
         String original    = dollarSkip ? raw.substring(1) : raw;
         boolean doConvert  = config.isRomajiConversionEnabled()
             && !dollarSkip
-            && !containsFullWidth(original);
+            && !containsFullWidth(original)
+            && allowConvert(player);
         String serverName  = player.getCurrentServer()
             .map(s -> s.getServerInfo().getName())
             .orElse("Lobby");
@@ -115,6 +121,17 @@ public class ChatListener {
             // Discord へ送信
             discordManager.sendChatMessage(serverName, player.getUsername(), displayMessage);
         });
+    }
+
+    /**
+     * ローマ字変換は 1 発言ごとに Google へ HTTP を投げるので、連投でプロキシを詰まらせないよう
+     * 1 人 1 秒に 1 回まで。超えた発言は変換せずそのまま流す。
+     */
+    // ponytail: 一度でも発言した人の UUID が残り続ける。人数はたかが知れているので掃除はしない
+    private boolean allowConvert(Player player) {
+        long now = System.currentTimeMillis();
+        Long last = lastConvert.put(player.getUniqueId(), now);
+        return last == null || now - last >= 1000;
     }
 
     /**

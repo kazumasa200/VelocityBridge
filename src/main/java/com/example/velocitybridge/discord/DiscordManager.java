@@ -5,10 +5,12 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -16,6 +18,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.slf4j.Logger;
 
 import java.time.Instant;
+import java.util.EnumSet;
 
 public class DiscordManager {
 
@@ -105,9 +108,10 @@ public class DiscordManager {
         String text = config.getDiscordChatFormat()
             .replace("{server}",  serverName)
             .replace("{player}",  playerName)
-            .replace("{message}", message);
+            .replace("{message}", MarkdownSanitizer.escape(message));
 
-        channel.sendMessage(text).queue(
+        // プレイヤーの発言に @everyone / @here / ロール / ユーザーの通知を飛ばさせない
+        channel.sendMessage(text).setAllowedMentions(EnumSet.noneOf(Message.MentionType.class)).queue(
             null,
             err -> logger.warn("[VelocityBridge] Discord へのメッセージ送信に失敗: {}", err.getMessage())
         );
