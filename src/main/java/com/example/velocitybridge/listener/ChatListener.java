@@ -5,6 +5,7 @@ import com.example.velocitybridge.config.PluginConfig;
 import com.example.velocitybridge.discord.DiscordManager;
 import com.example.velocitybridge.translation.RomajiConverter;
 import com.velocitypowered.api.event.EventTask;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -57,8 +58,12 @@ public class ChatListener {
      * denied() が安全に使えるようになります。
      * → その場合は config.yml で chat.use-denied: true に変更してください。
      */
-    @Subscribe
+    // 他プラグイン (ミュート・スパム対策など) の判定を見てから動く。拒否済みの発言は中継しない
+    @Subscribe(order = PostOrder.LAST)
     public EventTask onPlayerChat(PlayerChatEvent event) {
+        if (!event.getResult().isAllowed()) {
+            return null;
+        }
         Player player = event.getPlayer();
         String raw    = event.getMessage();
 

@@ -84,6 +84,14 @@ public class DiscordManager {
         return jda.getTextChannelById(id);
     }
 
+    /**
+     * Discord の文字列を Minecraft に流す前に、改行 (偽のチャット行) と § 装飾コード (偽の色) を取り除く。
+     * Placeholder.unparsed は MiniMessage タグしか防がないため。
+     */
+    private static String stripLineBreaksAndLegacyCodes(String s) {
+        return s.replaceAll("[\r\n]+", " ").replace("§", "");
+    }
+
     private void send(TextChannel channel, net.dv8tion.jda.api.entities.MessageEmbed embed) {
         channel.sendMessageEmbeds(embed).queue(
             null,
@@ -187,8 +195,8 @@ public class DiscordManager {
             // ProxyServer が未設定の場合は無視
             if (proxyServer == null) return;
 
-            String authorName = event.getAuthor().getName();
-            String message    = event.getMessage().getContentDisplay();
+            String authorName = stripLineBreaksAndLegacyCodes(event.getAuthor().getName());
+            String message    = stripLineBreaksAndLegacyCodes(event.getMessage().getContentDisplay());
 
             // Minecraft 内にブロードキャスト
             Component formatted = MiniMessage.miniMessage().deserialize(
